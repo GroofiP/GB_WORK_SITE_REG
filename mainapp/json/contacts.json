@@ -1,0 +1,20 @@
+[
+  {
+    "city": "Москва",
+    "phone": "+7-999-999-99-97",
+    "email": "basa@info.ru",
+    "address": "left"
+  },
+  {
+    "city": "Санкт - Петербург",
+    "phone": "+7-999-999-99-98",
+    "email": "basa@info.ru",
+    "address": "centr"
+  },
+  {
+    "city": "Екатеринбург",
+    "phone": "+7-999-999-99-99",
+    "email": "basa@info.ru",
+    "address": "right"
+  }
+]

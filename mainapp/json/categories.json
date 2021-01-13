@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Дом",
+    "description": "1"
+  },
+  {
+    "name": "Офис",
+    "description": "2"
+  },
+  {
+    "name": "Модерн",
+    "description": "3"
+  },
+  {
+    "name": "Классика",
+    "description": "4"
+  }
+]
