@@ -1,15 +1,37 @@
 import random
 
+from django.core.cache import cache
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, get_object_or_404
 from django.conf import settings
+from django.views.decorators.cache import cache_page
 
 from basketapp.models import Basket
 from mainapp.models import ProductCategory, Product
 import os
 import json
 
+def get_links_menu():
+    if settings.LOW_CACHE:
+        key = "links_menu"
+        links_menu = cache.get(key)
+        if links_menu is None:
+            links_menu = ProductCategory.objects.all()
+            cache.set(key,links_menu)
+        return links_menu
+    else:
+        return ProductCategory.objects.all()
 
+def get_category(pk):
+    if settings.LOW_CACHE:
+        key = f"category_{pk}"
+        category = cache.get(key)
+        if category is None:
+            category = get_object_or_404(ProductCategory, pk=pk)
+            cache.set(key,category)
+        return category
+    else:
+        return get_object_or_404(ProductCategory, pk=pk)
 
 def get_hot_product():
     products_list = Product.objects.all()
@@ -29,9 +51,9 @@ def main(request):
     }
     return render(request, 'mainapp/index.html', content)
 
-
+@cache_page(3600)
 def products(request, pk=None, page=1):
-    links_menu = ProductCategory.objects.all()
+    links_menu = get_links_menu()
 
     if pk is not None:
         if pk == 0:
@@ -39,7 +61,7 @@ def products(request, pk=None, page=1):
             category = {"name": "Все", "pk": 0}
         else:
             # category = ProductCategory.objects.get(pk=pk)
-            category = get_object_or_404(ProductCategory, pk=pk)
+            category = get_category(pk)
             products_list = Product.objects.filter(category__pk=pk)
 
         paginator = Paginator(products_list,2)
