@@ -1,4 +1,6 @@
 from django.contrib.auth.decorators import user_passes_test
+from django.db import connection
+from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -72,6 +74,7 @@ class UserUpdateView(UpdateView):
         context["title"] = "Категории и редактирование"
         return context
 
+
 # @user_passes_test(lambda u: u.is_superuser)
 # def user_update(request, pk):
 #     edit_user = get_object_or_404(ShopUser, pk=pk)
@@ -111,6 +114,7 @@ class UserDeleteView(DeleteView):
         category_item = get_object_or_404(Product, pk=category_pk)
         context_data["category"] = category_item
         return context_data
+
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def user_delete(request, pk):
@@ -190,6 +194,13 @@ class ProductCategoryUpdateView(UpdateView):
         context["title"] = "Категории и редактирование"
         return context
 
+    def form_valid(self, form):
+        if 'discount' in form.cleaned_data:
+            discount = form.cleaned_data['discount']
+            if discount:
+                self.object.product_set.update(price=F('price') * (1 - discount / 100))
+        return super().form_valid(form)
+
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def category_update(request, pk):
@@ -215,8 +226,16 @@ class ProductCategoryDeleteView(DeleteView):
         self.object = self.get_object()
         if self.object.is_active:
             self.object.is_active = False
+            product_item = Product.objects.filter(category__pk=self.object.pk)
+            for prod in product_item:
+                prod.is_active = False
+                prod.save()
         else:
             self.object.is_active = True
+            product_item = Product.objects.filter(category__pk=self.object.pk)
+            for prod in product_item:
+                prod.is_active = True
+                prod.save()
         self.object.save()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -337,7 +356,6 @@ class ProductDetailView(DetailView):
 #     return render(requset, "adminapp/product_read.html", content)
 
 
-
 class ProductUpdateView(UpdateView):
     model = Product
     template_name = "adminapp/product_update.html"
@@ -346,7 +364,6 @@ class ProductUpdateView(UpdateView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, *kwargs)
-
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -359,6 +376,7 @@ class ProductUpdateView(UpdateView):
         pk = self.kwargs["pk"]
         product_item = Product.objects.get(pk=pk)
         return reverse("adminapp:products", args=[product_item.category.pk])
+
 
 # @user_passes_test(lambda u: u.is_superuser)
 # def product_update(request, pk):
