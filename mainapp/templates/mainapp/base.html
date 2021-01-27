@@ -24,13 +24,15 @@
 
     {% block menu %}
     {% block inc_menu %}
-    <div class="header clearfix">
-        <a href="index.html" class="logo"></a>
-        {% include 'mainapp/includes/inc_main_menu.html' %}
-        <a href="#" class="search"></a>
-        <a href="{% url 'basket:view'%}" class="basket">
-            <span>{% if basket %}{{ basket.0.total_cost|floatformat:0 }} руб ({{basket.0.total_quantity}} шт.){%endif%}</span>
-        </a>
+    <div class="hero-white">
+        <div class="header clearfix">
+            <a href="index.html" class="logo"></a>
+            {% include 'mainapp/includes/inc_main_menu.html' %}
+            <a href="#" class="search"></a>
+            <a href="{% url 'basket:view'%}" class="basket">
+                <span>{% if basket %}{{ basket.0.total_cost|floatformat:0 }} руб ({{basket.0.total_quantity}} шт.){%endif%}</span>
+            </a>
+        </div>
     </div>
     {% endblock %}
     {% endblock %}

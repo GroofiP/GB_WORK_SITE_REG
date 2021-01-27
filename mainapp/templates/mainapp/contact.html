@@ -1,13 +1,5 @@
 {% extends "mainapp/base.html" %}
 {% load static %}
-{% block menu %}
-	<div class="hero">
-		{% block inc_menu %}
-		{{block.super}}
-		{% endblock %}
-		<h1>наши контакты</h1>
-	</div>
-{% endblock %}
 {% block content %}
 	<div class="location">
 		{% for location in locations %}

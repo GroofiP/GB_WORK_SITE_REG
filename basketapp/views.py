@@ -28,7 +28,7 @@ def add(request, pk):
     if not basket_item:
         basket_item = Basket(user=request.user, product=product)
 
-    basket_item[0].quantity = F('quantity') + 1
+    basket_item.quantity += 1
     basket_item.save()
 
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
